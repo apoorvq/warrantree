@@ -24,13 +24,18 @@ class RegisterResource(object):
 			)
 		username = req.params.get('username')
 		password = req.params.get('password')
+		existing_user = info.userExists(username)
+		print "Existing User: " + existing_user
+		length_of_the_user = len(existing_user)
+		print length_of_the_user
 
-		if info.userExists(username):
+		if  length_of_the_user > 2:
 			raise falcon.HTTPBadRequest(
 				'This username already exists please chose another username'
 			)
-
-
+		name = username
+		user = info.createUser(username,password,name)
+		print user
 
 
 

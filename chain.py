@@ -1,5 +1,6 @@
 from Savoir import Savoir
 import bcrypt
+import json
 
 
 
@@ -16,24 +17,46 @@ class Chain:
     chainname = 'DockerChain'
 
 
+    def bin2hex(self,binn):
+        import string
+        sonuc = binn.encode('hex')
+        return sonuc
+
     def getInfo(self):
         api = Savoir(rpcuser,rpcpasswd,rpchost,rpcport,chainname)
         return api.getinfo()
 
-    def listStreamKeyItems(streamID, key, verbose = True, $count = 10, start = -10, localOrdering = False):
+    def listStreamKeyItems(self,streamID, key, verbose, count, start, localOrdering):
         api = Savoir(rpcuser,rpcpasswd,rpchost,rpcport,chainname)
-        api.liststreamkeyitems(streamID,key,verbose,count,start,localOrdering)
-        if api.count > 0:
-            return True
-        else:
-            return False
+        return api.liststreamkeyitems(streamID,key,verbose,count,start,localOrdering)
 
-    def listPermissions(name):
+
+    def listPermissions(self,name):
         api = Savoir(rpcuser,rpcpasswd,rpchost,rpcport,chainname)
         return api.listpermissions(name)
 
-    def createUser(username,password,name):
+    def validateAddress(address):
+        api = Savoir(rpcuser,rpcpasswd,rpchost,rpcport,chainname)
+        return api.validateaddress(address)
+
+    def getAdminAddress(self):
+        api = Savoir(rpcuser,rpcpasswd,rpchost,rpcport,chainname)
+        values = self.listPermissions("admin")
+        print values
+        for index, item in enumerate(values):
+            print item['address']
+            validationInfo = api.validateaddress(item['address'])
+            if validationInfo['ismine']:
+                return item['address']
+
+
+
+    def createUser(self,username,password,name):
         api = Savoir(rpcuser,rpcpasswd,rpchost,rpcport,chainname)
         hashed = bcrypt.hashpw(password,bcrypt.gensalt())
         dct = {'USER_NAME':username, 'PASSWORD_HASH':hashed}
-        api.publishfrom()
+        print dct
+        address = self.getAdminAddress()
+        print address
+        txd = api.publishfrom(address,'users_details',username,self.bin2hex(json.dumps(dct)))
+        print txd

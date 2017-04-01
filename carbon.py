@@ -8,11 +8,11 @@ class Carbon:
         step_one = chain.Chain()
         return unicode(step_one.getInfo())
 
-    def userExists(username):
+    def userExists(self,username):
         step_one = chain.Chain()
-        return unicode(step_one.listStreamKeyItems('user_details', username, true, 1, -1, true))
+        return unicode(step_one.listStreamKeyItems('users_details', username, True, 1, -1, True))
 
-    def createUser(username,password,name):
+    def createUser(self,username,password,name):
         step_one = chain.Chain()
         return unicode(step_one.createUser(username,password,name))
 
